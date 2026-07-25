@@ -143,22 +143,30 @@ export async function getDoctorAppointments() {
       throw new Error("Doctor not found");
     }
 
-    const appointments = await db.appointment.findMany({
+    const now = new Date();
+
+    const allAppointments = await db.appointment.findMany({
       where: {
         doctorId: doctor.id,
-        status: {
-          in: ["SCHEDULED"],
-        },
       },
       include: {
         patient: true,
+        prescription: true,
       },
       orderBy: {
-        startTime: "asc",
+        startTime: "desc",
       },
     });
 
-    return { appointments };
+    const upcoming = allAppointments.filter(
+      (app) => app.status === "SCHEDULED" && new Date(app.endTime) >= now
+    );
+
+    const past = allAppointments.filter(
+      (app) => app.status !== "SCHEDULED" || new Date(app.endTime) < now
+    );
+
+    return { upcoming, past, appointments: upcoming };
   } catch (error) {
     throw new Error("Failed to fetch appointments " + error.message);
   }

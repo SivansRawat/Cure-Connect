@@ -65,17 +65,48 @@ export async function requestPayout(formData) {
     const platformFee = creditCount * PLATFORM_FEE_PER_CREDIT;
     const netAmount = creditCount * DOCTOR_EARNINGS_PER_CREDIT;
 
-    // Create payout request
-    const payout = await db.payout.create({
-      data: {
-        doctorId: doctor.id,
-        amount: totalAmount,
-        credits: creditCount,
-        platformFee,
-        netAmount,
-        paypalEmail,
-        status: "PROCESSING",
-      },
+    // Execute atomic transaction: Create payout & deduct doctor credits immediately to prevent double payouts
+    const payout = await db.$transaction(async (tx) => {
+      // Re-verify current doctor credits inside transaction
+      const currentDoctor = await tx.user.findUnique({
+        where: { id: doctor.id },
+      });
+
+      if (!currentDoctor || currentDoctor.credits < creditCount) {
+        throw new Error("Insufficient credit balance for this payout request.");
+      }
+
+      // Deduct doctor credits
+      await tx.user.update({
+        where: { id: doctor.id },
+        data: {
+          credits: { decrement: creditCount },
+        },
+      });
+
+      // Create transaction log
+      await tx.creditTransaction.create({
+        data: {
+          userId: doctor.id,
+          amount: -creditCount,
+          type: "ADMIN_ADJUSTMENT",
+        },
+      });
+
+      // Create Payout record
+      const createdPayout = await tx.payout.create({
+        data: {
+          doctorId: doctor.id,
+          amount: totalAmount,
+          credits: creditCount,
+          platformFee,
+          netAmount,
+          paypalEmail,
+          status: "PROCESSING",
+        },
+      });
+
+      return createdPayout;
     });
 
     revalidatePath("/doctor");

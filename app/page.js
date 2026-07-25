@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Pricing from "@/components/pricing";
+import AISymptomChecker from "@/components/ai-symptom-checker";
 import { creditBenefits, features, testimonials } from "@/lib/data";
 
 export default function Home() {
@@ -56,12 +57,21 @@ export default function Home() {
                 alt="Doctor consultation"
                 fill
                 priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover md:pt-14 rounded-xl"
               />
             </div>
           </div>
         </div>
       </section>
+
+      {/* AI Health Assistant Section */}
+      <section className="py-12 bg-emerald-950/20 border-y border-emerald-900/30">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <AISymptomChecker />
+        </div>
+      </section>
+
 
       {/* Features Section */}
       <section className="py-20 bg-muted/30">

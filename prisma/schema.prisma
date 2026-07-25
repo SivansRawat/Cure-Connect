@@ -84,11 +84,27 @@ model Appointment {
   videoSessionId    String?  // Vonage Video API Session ID
   videoSessionToken String?  // Optional: Can store tokens if needed
   
+  // Prescription relation
+  prescription      Prescription?
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   @@index([status, startTime])
   @@index([doctorId, startTime])
+}
+
+model Prescription {
+  id            String      @id @default(uuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctorId      String
+  patientId     String
+  diagnosis     String      @db.Text
+  medications   String      @db.Text
+  instructions  String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 enum AppointmentStatus {

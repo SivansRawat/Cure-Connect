@@ -34,6 +34,7 @@ import { generateVideoToken } from "@/actions/appointments";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import PrescriptionModal from "@/components/prescription-modal";
 
 export function AppointmentCard({
   appointment,
@@ -226,6 +227,16 @@ export function AppointmentCard({
   const otherPartyLabel = userRole === "DOCTOR" ? "Patient" : "Doctor";
   const otherPartyIcon = userRole === "DOCTOR" ? <User /> : <Stethoscope />;
 
+  const formatDisplayName = (person, isDoctorRole) => {
+    if (!person || !person.name || person.name === "null null" || person.name === "null") {
+      return isDoctorRole ? "Patient" : "Doctor";
+    }
+    if (!isDoctorRole && !person.name.startsWith("Dr.")) {
+      return `Dr. ${person.name}`;
+    }
+    return person.name;
+  };
+
   return (
     <>
       <Card className="border-emerald-900/20 hover:border-emerald-700/30 transition-all">
@@ -237,9 +248,7 @@ export function AppointmentCard({
               </div>
               <div>
                 <h3 className="font-medium text-white">
-                  {userRole === "DOCTOR"
-                    ? otherParty.name
-                    : `Dr. ${otherParty.name}`}
+                  {formatDisplayName(otherParty, userRole === "DOCTOR")}
                 </h3>
                 {userRole === "DOCTOR" && (
                   <p className="text-sm text-muted-foreground">
@@ -294,6 +303,13 @@ export function AppointmentCard({
                       </>
                     )}
                   </Button>
+                )}
+                {(appointment.prescription || userRole === "DOCTOR" || appointment.status === "COMPLETED") && (
+                  <PrescriptionModal
+                    appointment={appointment}
+                    userRole={userRole}
+                    existingPrescription={appointment.prescription}
+                  />
                 )}
                 <Button
                   size="sm"

@@ -26,7 +26,9 @@ export async function getPatientAppointments() {
       throw new Error("Patient not found");
     }
 
-    const appointments = await db.appointment.findMany({
+    const now = new Date();
+
+    const allAppointments = await db.appointment.findMany({
       where: {
         patientId: user.id,
       },
@@ -39,13 +41,22 @@ export async function getPatientAppointments() {
             imageUrl: true,
           },
         },
+        prescription: true,
       },
       orderBy: {
-        startTime: "asc",
+        startTime: "desc",
       },
     });
 
-    return { appointments };
+    const upcoming = allAppointments.filter(
+      (app) => app.status === "SCHEDULED" && new Date(app.endTime) >= now
+    );
+
+    const past = allAppointments.filter(
+      (app) => app.status !== "SCHEDULED" || new Date(app.endTime) < now
+    );
+
+    return { upcoming, past, appointments: allAppointments };
   } catch (error) {
     console.error("Failed to get patient appointments:", error);
     return { error: "Failed to fetch appointments" };

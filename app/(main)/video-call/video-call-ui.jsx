@@ -29,9 +29,43 @@ export default function VideoCall({ sessionId, token }) {
   const router = useRouter();
 
   const appId = process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID;
+  const isMockSession = token?.startsWith("mock_token") || sessionId?.startsWith("session_") || !appId;
 
-  // Handle script load
+  // Handle local camera for WebRTC fallback mode
+  const localVideoRef = useRef(null);
+  const [localStream, setLocalStream] = useState(null);
+
+  useEffect(() => {
+    if (isMockSession) {
+      setIsLoading(false);
+      setIsConnected(true);
+
+      // Access local webcam if available for WebRTC demo
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            setLocalStream(stream);
+            if (localVideoRef.current) {
+              localVideoRef.current.srcObject = stream;
+            }
+          })
+          .catch((err) => {
+            console.warn("Local webcam access not granted for mock video:", err.message);
+          });
+      }
+
+      return () => {
+        if (localStream) {
+          localStream.getTracks().forEach((track) => track.stop());
+        }
+      };
+    }
+  }, [isMockSession]);
+
+  // Handle script load for Vonage
   const handleScriptLoad = () => {
+    if (isMockSession) return;
     setScriptLoaded(true);
     if (!window.OT) {
       toast.error("Failed to load Vonage Video API");
@@ -176,7 +210,7 @@ export default function VideoCall({ sessionId, token }) {
     };
   }, []);
 
-  if (!sessionId || !token || !appId) {
+  if (!sessionId || !token) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-3xl font-bold text-white mb-4">
