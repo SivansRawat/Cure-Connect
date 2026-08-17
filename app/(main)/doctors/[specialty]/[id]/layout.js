@@ -6,9 +6,13 @@ export async function generateMetadata({ params }) {
   const { id } = await params;
 
   const { doctor } = await getDoctorById(id);
+  const formattedName = doctor?.name?.startsWith("Dr.")
+    ? doctor.name
+    : `Dr. ${doctor?.name || "Doctor"}`;
+
   return {
-    title: `Dr. ${doctor.name} - CureConnect`,
-    description: `Book an appointment with Dr. ${doctor.name}, ${doctor.specialty} specialist with ${doctor.experience} years of experience.`,
+    title: `${formattedName} - CureConnect`,
+    description: `Book an appointment with ${formattedName}, ${doctor?.specialty} specialist with ${doctor?.experience} years of experience.`,
   };
 }
 
@@ -18,11 +22,14 @@ export default async function DoctorProfileLayout({ children, params }) {
 
   if (!doctor) redirect("/doctors");
 
+  const formattedName = doctor?.name?.startsWith("Dr.")
+    ? doctor.name
+    : `Dr. ${doctor.name}`;
+
   return (
     <div className="container mx-auto">
       <PageHeader
-        // icon={<Stethoscope />}
-        title={"Dr. " + doctor.name}
+        title={formattedName}
         backLink={`/doctors/${doctor.specialty}`}
         backLabel={`Back to ${doctor.specialty}`}
       />

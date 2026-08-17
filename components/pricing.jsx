@@ -1,11 +1,18 @@
 "use client";
 
 import React, { Component } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { PricingTable } from "@clerk/nextjs";
-import { Check, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Check } from "lucide-react";
 
 class PricingErrorBoundary extends Component {
   constructor(props) {
@@ -81,34 +88,42 @@ function FallbackPricingUI() {
         {fallbackPlans.map((plan, index) => (
           <Card
             key={index}
-            className={`relative flex flex-col justify-between transition-all duration-300 ${
+            className={`relative flex flex-col justify-between transition-all duration-300 rounded-2xl ${
               plan.popular
-                ? "bg-gradient-to-b from-emerald-950/60 to-emerald-900/20 border-emerald-500/50 shadow-emerald-950/50 shadow-lg"
-                : "bg-card border-emerald-900/20 hover:border-emerald-800/40"
+                ? "bg-gradient-to-b from-teal-950/40 via-slate-900/60 to-slate-950/80 border-teal-500/40 shadow-xl shadow-teal-950/30"
+                : "bg-white/[0.02] border-white/[0.08] hover:border-white/20"
             }`}
           >
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-emerald-500 text-black font-semibold px-3 py-1">
+                <Badge className="bg-teal-400 text-slate-950 font-bold px-3 py-1 rounded-full text-xs">
                   Most Popular
                 </Badge>
               </div>
             )}
 
             <CardHeader className="pt-6">
-              <CardTitle className="text-xl font-bold text-white">{plan.name}</CardTitle>
-              <CardDescription className="text-muted-foreground">{plan.description}</CardDescription>
+              <CardTitle className="text-xl font-semibold text-white">
+                {plan.name}
+              </CardTitle>
+              <CardDescription className="text-slate-400 text-xs">
+                {plan.description}
+              </CardDescription>
               <div className="mt-4 flex items-baseline text-white">
-                <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
-                <span className="ml-2 text-sm text-emerald-400 font-medium">/ {plan.credits}</span>
+                <span className="text-3xl md:text-4xl font-bold tracking-tight">
+                  {plan.price}
+                </span>
+                <span className="ml-2 text-xs md:text-sm text-teal-300 font-medium">
+                  / {plan.credits}
+                </span>
               </div>
             </CardHeader>
 
             <CardContent className="flex-1">
-              <ul className="space-y-3 text-sm text-muted-foreground">
+              <ul className="space-y-3 text-xs md:text-sm text-slate-300">
                 {plan.features.map((feature, fIndex) => (
                   <li key={fIndex} className="flex items-center">
-                    <Check className="h-4 w-4 text-emerald-400 mr-2 shrink-0" />
+                    <Check className="h-4 w-4 text-teal-400 mr-2 shrink-0" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -117,10 +132,10 @@ function FallbackPricingUI() {
 
             <CardFooter>
               <Button
-                className={`w-full ${
+                className={`w-full font-semibold rounded-xl py-5 transition-all cursor-pointer ${
                   plan.popular
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                    : "bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-300 border border-emerald-700/40"
+                    ? "bg-white text-slate-950 hover:bg-slate-100 shadow-md shadow-white/5"
+                    : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/10"
                 }`}
               >
                 Get Started
@@ -134,11 +149,12 @@ function FallbackPricingUI() {
 }
 
 const Pricing = () => {
-  const isBillingEnabled = process.env.NEXT_PUBLIC_CLERK_BILLING_ENABLED === "true";
+  const isBillingEnabled =
+    process.env.NEXT_PUBLIC_CLERK_BILLING_ENABLED === "true";
 
   return (
-    <Card className="border-emerald-900/30 shadow-lg bg-gradient-to-b from-emerald-950/30 to-transparent">
-      <CardContent className="p-6 md:p-8">
+    <Card className="border-white/[0.08] shadow-2xl bg-transparent rounded-2xl overflow-hidden">
+      <CardContent className="p-2 md:p-4">
         {isBillingEnabled ? (
           <PricingErrorBoundary>
             <PricingTable
@@ -162,4 +178,3 @@ const Pricing = () => {
 };
 
 export default Pricing;
-

@@ -82,9 +82,7 @@ export function DoctorProfile({ doctor, availableDays }) {
                   )}
                 </div>
 
-                <h2 className="text-xl font-bold text-white mb-1">
-                  Dr. {doctor.name}
-                </h2>
+
 
                 <Badge
                   variant="outline"
@@ -126,9 +124,7 @@ export function DoctorProfile({ doctor, availableDays }) {
       <div className="md:col-span-2 space-y-6">
         <Card className="border-emerald-900/20">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-white">
-              About Dr. {doctor.name}
-            </CardTitle>
+
             <CardDescription>
               Professional background and expertise
             </CardDescription>
