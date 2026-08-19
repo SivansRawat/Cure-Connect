@@ -3,14 +3,21 @@
 import { db } from "@/lib/prisma";
 
 const SPECIALTY_KEYWORDS = {
-  Cardiology: ["chest pain", "heart", "blood pressure", "palpitations", "shortness of breath", "cardiac"],
-  Dermatology: ["rash", "skin", "itching", "acne", "eczema", "mole", "lesion", "spots"],
-  Neurology: ["headache", "migraine", "dizziness", "numbness", "seizure", "memory", "brain", "tremor"],
-  Pediatrics: ["child", "baby", "infant", "toddler", "growth", "vaccination", "pediatric"],
-  Orthopedics: ["joint pain", "bone", "fracture", "back pain", "knee", "shoulder", "spine", "arthritis"],
-  Psychiatry: ["anxiety", "depression", "stress", "sleep", "insomnia", "mood", "mental health"],
-  Gastroenterology: ["stomach", "stomach pain", "acid reflux", "nausea", "digestion", "gut", "diarrhea"],
-  "General Medicine": ["fever", "flu", "cough", "cold", "fatigue", "weakness", "checkup"],
+  Cardiology: ["chest pain", "heart", "blood pressure", "palpitations", "shortness of breath", "cardiac", "angina"],
+  Dermatology: ["rash", "skin", "itching", "acne", "eczema", "mole", "lesion", "spots", "psoriasis", "dermatitis"],
+  Neurology: ["headache", "migraine", "dizziness", "numbness", "seizure", "memory", "brain", "tremor", "vertigo", "neuropathy"],
+  Pediatrics: ["child", "baby", "infant", "toddler", "growth", "vaccination", "pediatric", "newborn"],
+  Orthopedics: ["joint pain", "bone", "fracture", "back pain", "knee", "shoulder", "spine", "arthritis", "ligament", "sprain"],
+  Psychiatry: ["anxiety", "depression", "stress", "sleep", "insomnia", "mood", "mental health", "panic", "adhd", "burnout"],
+  Gastroenterology: ["stomach", "stomach pain", "acid reflux", "nausea", "digestion", "gut", "diarrhea", "constipation", "bloating", "gerd", "ibs"],
+  Endocrinology: ["thyroid", "diabetes", "blood sugar", "hormone", "metabolic", "adrenal", "pcos", "insulin", "weight gain"],
+  "Obstetrics & Gynecology": ["pregnancy", "period", "menstrual", "gynecology", "pelvic", "fertility", "prenatal", "ovary", "uterus", "pcos"],
+  Oncology: ["tumor", "cancer", "oncology", "chemotherapy", "biopsy", "malignancy", "radiation", "immunotherapy"],
+  Ophthalmology: ["eye", "vision", "blur", "glaucoma", "cornea", "retina", "dry eye", "cataract", "astigmatism"],
+  Pulmonology: ["cough", "breathing", "lung", "asthma", "copd", "respiratory", "bronchitis", "wheezing", "sleep apnea"],
+  Radiology: ["mri", "x-ray", "ct scan", "ultrasound", "scan", "imaging", "radiology", "dexa"],
+  Urology: ["urinary", "kidney stone", "bladder", "prostate", "urine", "uti", "urology", "incontinence"],
+  "General Medicine": ["fever", "flu", "cough", "cold", "fatigue", "weakness", "checkup", "malaise", "body ache", "infection"],
 };
 
 /**
@@ -54,7 +61,7 @@ export async function analyzeSymptoms(symptomsText) {
                       text: `You are an AI Triage Medical Assistant for Cure-Connect. Analyze these symptoms: "${symptomsText}".
 Respond in JSON with:
 {
-  "specialty": "One of (Cardiology, Dermatology, Neurology, Pediatrics, Orthopedics, Psychiatry, Gastroenterology, General Medicine)",
+  "specialty": "One of (General Medicine, Cardiology, Dermatology, Endocrinology, Gastroenterology, Neurology, Obstetrics & Gynecology, Oncology, Ophthalmology, Orthopedics, Pediatrics, Psychiatry, Pulmonology, Radiology, Urology)",
   "reason": "Brief 1-sentence medical rationale",
   "urgency": "Low | Moderate | High"
 }`,
